@@ -1,28 +1,26 @@
-# planar arm obstacle avoidance example, build factor graph in matlab
-# @author Jing Dong
-# @date Nov 16, 2015
+# @brief    Point Robot 2D example, building factor graph in matlab
+# @author   Mustafa Mukadam
+# @date     July 20, 2016
 
+## Load libraries
 from gtsam import *
 from gpmp2 import *
 from utils import *
 import numpy as np
 
-
 ## small dataset
-# dataset = generate2Ddataset('OneObstacleDataset')
-dataset = generate2Ddataset('ZeroObstacleDataset')
+# dataset = generate2Ddataset('MultiObstacleDataset')
+dataset = generate2Ddataset('OneObstacleDataset')
 rows = dataset.rows
 cols = dataset.cols
-cell_size = np.float64(dataset.cell_size)
-# origin_point2 = Point2(dataset.origin_x, dataset.origin_y)
-origin_point2 = Point2(0, 0)
+cell_size = dataset.cell_size
+origin_point2 = Point2(dataset.origin_x, dataset.origin_y)
 
 # signed distance field
 field = signedDistanceField2D(dataset.map, cell_size)
-# field.fill(1.)
 sdf = PlanarSDF(origin_point2, cell_size, field)
 
-# plot sdf
+# # plot sdf
 # figure(2)
 # plotSignedDistanceField2D(field, dataset.origin_x, dataset.origin_y, dataset.cell_size)
 # title('Signed Distance Field')
@@ -38,37 +36,42 @@ check_inter = total_check_step / total_time_step - 1
 # use GP interpolation
 use_GP_inter = True
 
-# arm model
-arm = generateArm('SimpleTwoLinksArm')
+# point robot model
+pR = PointRobot(2,1)
+spheres_data = np.array([0,  0.0,  0.0,  0.0,  1.5])
+nr_body = spheres_data.shape[0]
+sphere_vec = BodySphereVector()
+sphere_vec.push_back(BodySphere(int(spheres_data[0]), spheres_data[4], Point3(spheres_data[1:4])))
+pR_model = PointRobotModel(pR, sphere_vec)
 
 # GP
-Qc = np.eye(2, dtype=np.float64)
+Qc = np.eye(2)
 Qc_model = noiseModel.Gaussian.Covariance(Qc) 
 
-# Obstacle avoid settings
-cost_sigma = np.float64(0.1)
-epsilon_dist = np.float64(0.1)
+# obstacle cost settings
+cost_sigma = 0.3
+epsilon_dist = 2
 
 # prior to start/goal
 pose_fix = noiseModel.Isotropic.Sigma(2, 0.0001)
 vel_fix = noiseModel.Isotropic.Sigma(2, 0.0001)
 
-# start and end conf
-start_conf = np.array([0, 0], dtype=np.float64)
+# start and  conf
+start_conf = np.array([-15, -8], dtype=np.float64)
 start_vel = np.array([0, 0], dtype=np.float64)
-end_conf = np.array([np.pi/2, 0], dtype=np.float64)
-end_vel = np.array([0, 0], dtype=np.float64)
-avg_vel = (end_conf / total_time_step) / delta_t
+_conf = np.array([17, 14], dtype=np.float64)
+_vel = np.array([0, 0], dtype=np.float64)
+avg_vel = (_conf / total_time_step) / delta_t
 
 # plot param
 pause_time = total_time_sec / total_time_step
 
-# # plot start / end configuration
+# # plot start /  configuration
 # figure(1), hold on
 # plotEvidenceMap2D(dataset.map, dataset.origin_x, dataset.origin_y, cell_size)
+# plotPointRobot2D(pR_model, start_conf)
+# plotPointRobot2D(pR_model, _conf)
 # title('Layout')
-# plotPlanarArm(arm.fk_model(), start_conf, 'b', 2)
-# plotPlanarArm(arm.fk_model(), end_conf, 'r', 2)
 # hold off
 
 
@@ -76,23 +79,24 @@ pause_time = total_time_sec / total_time_step
 graph = NonlinearFactorGraph()
 init_values = Values()
 
-for i in range(0, total_time_step+1):
+for i in range(0, total_time_step + 1):
     key_pos = symbol('x', i)
     key_vel = symbol('v', i)
     
-    # initialize as straight line in conf space
-    pose = start_conf * (total_time_step-i)/total_time_step + end_conf * i/total_time_step
+    # initial values: straght line
+    pose = start_conf * (total_time_step-i)/total_time_step + _conf * i/total_time_step
     vel = avg_vel
     init_values.insert(key_pos, pose)
     init_values.insert(key_vel, vel)
     
-    # start/end priors
+    # priors
     if i==0:
         graph.add(PriorFactorVector(key_pos, start_conf, pose_fix))
         graph.add(PriorFactorVector(key_vel, start_vel, vel_fix))
-    elif i == total_time_step:
-        graph.add(PriorFactorVector(key_pos, end_conf, pose_fix))
-        graph.add(PriorFactorVector(key_vel, end_vel, vel_fix))
+    elif i==total_time_step:
+        graph.add(PriorFactorVector(key_pos, _conf, pose_fix))
+        graph.add(PriorFactorVector(key_vel, _vel, vel_fix))
+    
     
     # GP priors and cost factor
     if i > 0:
@@ -103,34 +107,19 @@ for i in range(0, total_time_step+1):
         graph.add(GaussianProcessPriorLinear(key_pos1, key_vel1, key_pos2, key_vel2, delta_t, Qc_model))
         
         # cost factor
-        graph.add(ObstaclePlanarSDFFactorArm(key_pos, arm, sdf, cost_sigma, epsilon_dist))
+        graph.add(ObstaclePlanarSDFFactorPointRobot(key_pos, pR_model, sdf, cost_sigma, epsilon_dist))
         
-        # # GP cost factor
-        # if use_GP_inter and check_inter > 0:
-        #     for j in range(0, int(check_inter)):
-        #         tau = (j + 1) * (total_time_sec / total_check_step)
-        #         graph.add(ObstaclePlanarSDFFactorGPArm(
-        #             key_pos1, key_vel1, key_pos2, key_vel2, 
-        #             arm, sdf, cost_sigma, epsilon_dist,
-        #             Qc_model, delta_t, tau))
-
-# import pdb; pdb.set_trace()
-
-# ## plot initial values
-# for i=0:total_time_step
-#     figure(3), hold on
-#     title('Initial Values')
-#     # plot world
-#     plotEvidenceMap2D(dataset.map, dataset.origin_x, dataset.origin_y, cell_size)
-#     # plot arm
-#     conf = init_values.atVector(symbol('x', i))
-#     plotPlanarArm(arm, conf, 'b', 2)
-#     pause(pause_time), hold off
-# end
-
+        # GP cost factor
+        if use_GP_inter & int(check_inter) > 0:
+            for j in range(1, int(check_inter) + 1):
+                tau = j * (total_time_sec / total_check_step)
+                graph.add(ObstaclePlanarSDFFactorGPPointRobot(key_pos1, key_vel1, key_pos2, key_vel2,pR_model, sdf, cost_sigma, epsilon_dist, Qc_model, delta_t, tau))
+            
+        
+    
 
 ## optimize!
-use_trustregion_opt = True
+use_trustregion_opt = False
 
 if use_trustregion_opt:
     parameters = DoglegParams()
@@ -154,8 +143,6 @@ result = optimizer.values()
 #     plotEvidenceMap2D(dataset.map, dataset.origin_x, dataset.origin_y, cell_size)
 #     # plot arm
 #     conf = result.atVector(symbol('x', i))
-#     plotPlanarArm(arm.fk_model(), conf, 'b', 2)
+#     plotPointRobot2D(pR_model, conf)
 #     pause(pause_time), hold off
-# end
-
 

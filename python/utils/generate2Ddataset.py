@@ -20,8 +20,19 @@ def generate2Ddataset(dataset_str):
     dataset = DotMap()
 
 
+    # dataset 0: 0 obs dataset for 2D Arm obs avoid
+    if dataset_str == 'ZeroObstacleDataset':
+        # params
+        dataset.cols = 300
+        dataset.rows = 300
+        dataset.origin_x = -1
+        dataset.origin_y = -1
+        dataset.cell_size = 0.01
+        # map
+        dataset.map = np.zeros((dataset.rows, dataset.cols))
+
     # dataset 5: 1 obs dataset for 2D Arm obs avoid
-    if dataset_str == 'OneObstacleDataset':
+    elif dataset_str == 'OneObstacleDataset':
         # params
         dataset.cols = 300
         dataset.rows = 300
@@ -84,7 +95,7 @@ def generate2Ddataset(dataset_str):
         
     # no such dataset
     else:
-        error('No such dataset exist')
+        raise NotImplementedError('No such dataset exist')
 
     return dataset
 

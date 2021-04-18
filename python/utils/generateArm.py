@@ -15,14 +15,14 @@ def generateArm(arm_str, base_pose=None):
 
 
     if base_pose is None:
-        base_pose = Pose3(Rot3(np.eye(3)), Point3(*[0,0,0]))
+        base_pose = Pose3(Rot3(np.eye(3, dtype=np.float64)), Point3(*np.array([0,0,0], dtype=np.float64)))
 
     #  2 link arm 
     if arm_str == 'SimpleTwoLinksArm':
         # abstract arm
-        a = [0.5, 0.5]
-        d = [0, 0]
-        alpha = [0, 0]
+        a = np.array([0.5, 0.5], dtype=np.float64)
+        d = np.array([0, 0], dtype=np.float64)
+        alpha = np.array([0, 0], dtype=np.float64)
         arm = Arm(2, a, alpha, d)
         # physical arm
         spheres_data = np.array([
@@ -37,7 +37,7 @@ def generateArm(arm_str, base_pose=None):
             [1,  -0.2,  0.0,  0.0,  0.01],
             [1,  -0.1,  0.0,  0.0,  0.01],
             [1,  0.0,  0.0,  0.0,  0.01]
-        ])
+        ], dtype=np.float64)
         nr_body = spheres_data.shape[0]
         sphere_vec = BodySphereVector()
         for i in range(0, nr_body):
@@ -70,11 +70,11 @@ def generateArm(arm_str, base_pose=None):
             [2,  -0.2,  0.0, 0.0, 0.01],
             [2,  -0.1, 0.0, 0.0, 0.01],
             [2,  0.0, 0.0, 0.0, 0.01],
-        ])
+        ], dtype=np.float64)
         nr_body = spheres_data.shape[0]
         sphere_vec = BodySphereVector()
         for i in range(0, nr_body):
-            sphere_vec.push_back(BodySphere(spheres_data[i,0], spheres_data[i,4], Point3(*spheres_data[i,1:4])))
+            sphere_vec.push_back(BodySphere(int(spheres_data[i,0]), spheres_data[i,4], Point3(*spheres_data[i,1:4])))
         arm_model = ArmModel(arm, sphere_vec)
 
     # 7 link WAM arm
@@ -105,7 +105,7 @@ def generateArm(arm_str, base_pose=None):
             [6, 0.15, -0.025, 0.13, 0.04],
             [6, 0.15,  0.025, 0.13, 0.04],
             [6, -0.15,  0,     0.13, 0.04]
-        ])
+        ], dtype=np.float64)
         
         nr_body = spheres_data.shape[0]
         
@@ -153,7 +153,7 @@ def generateArm(arm_str, base_pose=None):
           [6, 0, -0.027000, 0.155, 0.035000],
           [6, 0, -0.00900,  0.18,  0.030000],
           [6, 0, -0.00950,  0.205, 0.020000],
-        ])
+        ], dtype=np.float64)
 
         nr_body = spheres_data.shape[0]
         
@@ -212,7 +212,7 @@ def generateArm(arm_str, base_pose=None):
             [5, 0.0,  0.0,    -0.08,  0.02],
             [5, 0.0,  -0.025, -0.08,  0.02],
             [5, 0.0,  -0.015, -0.055, 0.02],
-        ])
+        ], dtype=np.float64)
 
         nr_body = spheres_data.shape[0]
         

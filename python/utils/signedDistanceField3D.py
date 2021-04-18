@@ -20,8 +20,8 @@ def signedDistanceField3D(ground_truth_map, cell_size):
 	inv_map = 1 - map
 
 	# get signed distance from map and inverse map
-	map_dist = distance_transform_edt(map)
-	inv_map_dist = distance_transform_edt(inv_map)
+	map_dist = distance_transform_edt(np.logical_not(map))
+	inv_map_dist = distance_transform_edt(np.logical_not(inv_map))
 
 	field = map_dist - inv_map_dist
 
