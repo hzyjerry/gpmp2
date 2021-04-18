@@ -30,7 +30,8 @@ def signedDistanceField3D(ground_truth_map, cell_size):
 	field = np.array(field, dtype=np.float64)
 
 	# limit inf
-	if np.isinf(field[0, 0]):
-	    field = np.ones_like(field) * 1000
+	if np.any(np.isinf(field[0, 0])):
+		print("Got inf sdf")
+		field = np.ones_like(field) * 1000
 
 	return field

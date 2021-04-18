@@ -15,7 +15,7 @@ def generateArm(arm_str, base_pose=None):
 
 
     if base_pose is None:
-        base_pose = Pose3(Rot3(np.eye(3)), Point3(np.array([0,0,0])))
+        base_pose = Pose3(Rot3(np.eye(3)), Point3(*[0,0,0]))
 
     #  2 link arm 
     if arm_str == 'SimpleTwoLinksArm':
@@ -39,9 +39,9 @@ def generateArm(arm_str, base_pose=None):
             [1,  0.0,  0.0,  0.0,  0.01]
         ])
         nr_body = spheres_data.shape[0]
-        sphere_vec = BodySphereVector
+        sphere_vec = BodySphereVector()
         for i in range(0, nr_body):
-            sphere_vec.push_back(BodySphere(int(spheres_data[i,0]), spheres_data[i,4], Point3(spheres_data[i,1:4])))
+            sphere_vec.push_back(BodySphere(int(spheres_data[i,0]), spheres_data[i,4], Point3(*spheres_data[i,1:4])))
         arm_model = ArmModel(arm, sphere_vec)
         
     # 3 link arm
@@ -72,9 +72,9 @@ def generateArm(arm_str, base_pose=None):
             [2,  0.0, 0.0, 0.0, 0.01],
         ])
         nr_body = spheres_data.shape[0]
-        sphere_vec = BodySphereVector
+        sphere_vec = BodySphereVector()
         for i in range(0, nr_body):
-            sphere_vec.push_back(BodySphere(spheres_data[i,0], spheres_data[i,4], Point3(spheres_data[i,1:4])))
+            sphere_vec.push_back(BodySphere(spheres_data[i,0], spheres_data[i,4], Point3(*spheres_data[i,1:4])))
         arm_model = ArmModel(arm, sphere_vec)
 
     # 7 link WAM arm
@@ -109,9 +109,9 @@ def generateArm(arm_str, base_pose=None):
         
         nr_body = spheres_data.shape[0]
         
-        sphere_vec = BodySphereVector
+        sphere_vec = BodySphereVector()
         for i in range(0, nr_body):
-            sphere = BodySphere(int(spheres_data[i,0]), spheres_data[i,4], Point3(spheres_data[i,1:4]))
+            sphere = BodySphere(int(spheres_data[i,0]), spheres_data[i,4], Point3(*spheres_data[i,1:4]))
             sphere_vec.push_back(sphere)
         arm_model = ArmModel(abs_arm, sphere_vec)
 
@@ -157,9 +157,9 @@ def generateArm(arm_str, base_pose=None):
 
         nr_body = spheres_data.shape[0]
         
-        sphere_vec = BodySphereVector
+        sphere_vec = BodySphereVector()
         for i in range(0, nr_body):
-            sphere_vec.push_back(BodySphere(int(spheres_data[i,0]), spheres_data[i,4], Point3(spheres_data[i,1:4])))
+            sphere_vec.push_back(BodySphere(int(spheres_data[i,0]), spheres_data[i,4], Point3(*spheres_data[i,1:4])))
         arm_model = ArmModel(abs_arm, sphere_vec)
 
     # 6 DOF JACO2 arm
@@ -216,13 +216,13 @@ def generateArm(arm_str, base_pose=None):
 
         nr_body = spheres_data.shape[0]
         
-        sphere_vec = BodySphereVector
+        sphere_vec = BodySphereVector()
         for i in range(0, nr_body):
-            sphere_vec.push_back(BodySphere(int(spheres_data[i,0]), spheres_data[i,4], Point3(spheres_data[i,1:4])))
+            sphere_vec.push_back(BodySphere(int(spheres_data[i,0]), spheres_data[i,4], Point3(*spheres_data[i,1:4])))
         arm_model = ArmModel(abs_arm, sphere_vec)
         
     # no such dataset
     else:
         raise NotImplementedError('No such arm exist')
 
-    return ArmModel
+    return arm_model

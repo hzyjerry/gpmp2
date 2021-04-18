@@ -1,3 +1,5 @@
 from .generate3Ddataset import generate3Ddataset
+from .generate2Ddataset import generate2Ddataset
 from .signedDistanceField3D import signedDistanceField3D
+from .signedDistanceField2D import signedDistanceField2D
 from .generateArm import generateArm
