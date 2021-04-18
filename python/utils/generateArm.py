@@ -20,6 +20,9 @@ def generateArm(arm_str, base_pose=None):
     #  2 link arm 
     if arm_str == 'SimpleTwoLinksArm':
         # abstract arm
+        # a = np.array([[0.5, 0.5]], dtype=np.float64).T
+        # d = np.array([[0, 0]], dtype=np.float64).T
+        # alpha = np.array([[0, 0]], dtype=np.float64).T
         a = np.array([0.5, 0.5], dtype=np.float64)
         d = np.array([0, 0], dtype=np.float64)
         alpha = np.array([0, 0], dtype=np.float64)

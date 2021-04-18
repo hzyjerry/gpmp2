@@ -1,3 +1,11 @@
 build*
 *.pyc
 __pycache__
+
+CMakeCache.txt
+CMakeFiles/
+CTestTestfile.cmake
+Makefile
+cmake_install.cmake
+
+python/pybind11

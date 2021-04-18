@@ -9,8 +9,8 @@ from utils import *
 import numpy as np
 
 ## small dataset
-# dataset = generate2Ddataset('MultiObstacleDataset')
-dataset = generate2Ddataset('OneObstacleDataset')
+dataset = generate2Ddataset('MultiObstacleDataset')
+# dataset = generate2Ddataset('OneObstacleDataset')
 rows = dataset.rows
 cols = dataset.cols
 cell_size = dataset.cell_size
