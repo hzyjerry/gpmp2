@@ -4,8 +4,25 @@
 #include <pybind11/stl_bind.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
+
 #include "gtsam/base/serialization.h"
+#include "gtsam/base/Testable.h"
+#include "gtsam/base/OptionalJacobian.h"
+#include "gtsam/base/Matrix.h"
+#include "gtsam/base/Lie.h"
+#include "gtsam/base/Vector.h"
+#include "gtsam/base/VectorSpace.h"
+#include "gtsam/base/ProductLieGroup.h"
+#include "gtsam/linear/JacobianFactor.h"
+
+#include "gtsam/geometry/concepts.h"
+#include "gtsam/geometry/Pose2.h"
+#include "gtsam/geometry/Pose3.h"
+#include "gtsam/geometry/concepts.h"
+#include "gtsam/nonlinear/Values.h"
 #include "gtsam/nonlinear/utilities.h"  // for RedirectCout.
+#include "gtsam/nonlinear/NonlinearFactor.h"
+
 
 {includes}
 #include <boost/serialization/export.hpp>

@@ -1,4 +1,4 @@
-// gpmp2 PYTHON wrapper declarations
+// gpmp2 matlab wrapper declarations
 
 // gtsam deceleration
 class gtsam::Vector6;
@@ -12,14 +12,14 @@ class gtsam::GaussianFactorGraph;
 class gtsam::Values;
 virtual class gtsam::noiseModel::Base;
 virtual class gtsam::NonlinearFactor;
-virtual class gtsam::NonlinearFactorGraph;
-virtual class gtsam::NoiseModelFactor;
+virtual class gtsam::NoiseModelFactor : gtsam::NonlinearFactor;
 
 namespace gpmp2 {
 
 ////////////////////////////////////////////////////////////////////////////////
 // geometry
 ////////////////////////////////////////////////////////////////////////////////
+// gpmp2 matlab wrapper declarations
 
 #include <gpmp2/geometry/Pose2Vector.h>
 

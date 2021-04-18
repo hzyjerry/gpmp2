@@ -1,6 +1,10 @@
 # We split the library in to separate subfolders, each containing
 # tests, timing, and an optional convenience library.
 # The following variable is the master list of subdirs to add
+
+message(STATUS "Source ${PROJECT_SOURCE_DIR}")
+include_directories(BEFORE "${PROJECT_SOURCE_DIR}")
+
 set(gpmp2_subdirs 
     geometry
     gp 
@@ -11,6 +15,7 @@ set(gpmp2_subdirs
     utils
 )
 set(gpmp2_srcs)
+
 
 # files want to be excluded
 set(excluded_sources "")
@@ -30,6 +35,8 @@ foreach(subdir ${gpmp2_subdirs})
 endforeach(subdir)
 
 
+# list(APPEND gpmp2_srcs ../cpp/greeting.h ../cpp/greeting.cpp)
+
 # Versions
 set(gpmp2_version   ${GPMP2_VERSION_MAJOR}.${GPMP2_VERSION_MINOR}.${GPMP2_VERSION_PATCH})
 set(gpmp2_soversion ${GPMP2_VERSION_MAJOR})
@@ -38,6 +45,7 @@ message(STATUS "Install prefix: ${CMAKE_INSTALL_PREFIX}")
 
 
 # build shared lib
+message(STATUS "Project name ${PROJECT_NAME} ${GTSAM_LIBRARIES}")
 if(GPMP2_BUILD_STATIC_LIBRARY)
   # static
   message(STATUS "Build static library")
@@ -52,7 +60,10 @@ if(GPMP2_BUILD_STATIC_LIBRARY)
     set_target_properties(gpmp2 PROPERTIES
       PREFIX "lib")
   endif()
-  install(TARGETS ${PROJECT_NAME} EXPORT gpmp2-exports ARCHIVE DESTINATION lib)
+  install(
+    TARGETS ${PROJECT_NAME} 
+    # EXPORT gpmp2-exports 
+    ARCHIVE DESTINATION lib)
 
 else()
   # shared
@@ -70,7 +81,13 @@ else()
         DEFINE_SYMBOL GPMP2_EXPORTS
         RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
   endif()
-  install(TARGETS ${PROJECT_NAME} EXPORT gpmp2-exports LIBRARY DESTINATION lib ARCHIVE DESTINATION lib RUNTIME DESTINATION bin)
+  install(
+    TARGETS ${PROJECT_NAME} 
+    # EXPORT gpmp2-exports 
+    LIBRARY DESTINATION lib 
+    ARCHIVE DESTINATION lib 
+    RUNTIME DESTINATION bin)
+
 
 endif()
 

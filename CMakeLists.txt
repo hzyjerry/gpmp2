@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.9)
 enable_testing()
 project(gpmp2 CXX C)
 
@@ -27,6 +27,8 @@ endif()
 find_package(GTSAM REQUIRED) # Uses installed package
 include_directories(${GTSAM_INCLUDE_DIR})
 set(GTSAM_LIBRARIES gtsam)   # TODO: automatic search libs
+
+message(STATUS "Found gtsam ${CMAKE_MODULE_PATH} ${GTSAM_DIR}")
 
 find_package(GTSAMCMakeTools)
 include(GtsamMakeConfigFile)
@@ -60,6 +62,9 @@ include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR})
 # Process source subdirs
 add_subdirectory(gpmp2)
 
+# ##############################################################################
+
+
 # Wrapping to MATLAB
 if(GPMP2_BUILD_MATLAB_TOOLBOX)
   # wrap
@@ -71,9 +76,9 @@ if(GPMP2_BUILD_MATLAB_TOOLBOX)
 endif()
 
 
-# Install config and export files
-GtsamMakeConfigFile(gpmp2)
-export(TARGETS ${GPMP2_EXPORTED_TARGETS} FILE gpmp2-exports.cmake)
+# # Install config and export files
+# GtsamMakeConfigFile(gpmp2)
+# export(TARGETS ${GPMP2_EXPORTED_TARGETS} FILE gpmp2.cmake)
 
 
 
